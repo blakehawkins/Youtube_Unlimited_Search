@@ -1,7 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
 import urllib.parse
-import json
 
 
 class YoutubeUnlimitedSearch:
@@ -28,20 +27,50 @@ class YoutubeUnlimitedSearch:
             if videoLink["href"].startswith("/watch?v="):
                 link = videoLink["href"]
                 extraData = tile.select('.yt-lockup-meta-info li')
-                video_info = {
-                    "title": videoLink["title"],
-                    "thumbnail": tile.find('img').attrs['src'],
-                    "description": tile.find('div', {'class': 'yt-lockup-description'}).getText(),
-                    "link": link,
-                    "id": link[videoLink["href"].index("=")+1:],
-                    "views": extraData[1].getText(),
-                    "published": extraData[0].getText(),
-                    "duration": tile.select('.video-time')[0].getText(),
-                    "channel": tile.select('.yt-lockup-byline .spf-link')[0].getText()
-                }
-                results.append(video_info)
+                thumb = tile.find('img')
+                if 'http' in thumb.attrs['src']:
+                    thumb = thumb.attrs['src']
+                elif thumb.attrs['data-thumb'] is not None:
+                    thumb = thumb.attrs['data-thumb']
+
+                views = ""
+                published = ""
+                duration = ""
+                channel = ""
+                description = ""
+                try:
+                    views = extraData[1].getText()
+                    published = extraData[0].getText()
+                except:
+                    print("Can't catch views and published time")
+                try:
+                    duration = tile.select('.video-time')[0].getText()
+                except:
+                    print("can't catch duration")
+                try:
+                    channel = tile.select('.yt-lockup-byline .spf-link')[0].getText()
+                except:
+                    print("can't catch channel")
+                try:
+                    description = tile.find('div', {'class': 'yt-lockup-description'}).getText()
+                except:
+                    print("can't catch channel")
+                try:
+                    video_info = {
+                        "title": videoLink["title"],
+                        "thumbnail": thumb,
+                        "description": description,
+                        "link": link,
+                        "id": link[videoLink["href"].index("=") + 1:],
+                        "views": views,
+                        "published": published,
+                        "duration": duration,
+                        "channel": channel
+                    }
+                    results.append(video_info)
+                except:
+                    print("skip this")
         return results
 
     def get(self):
         return self.videos
-
