@@ -35,7 +35,9 @@ class YoutubeUnlimitedSearch:
                     "link": link,
                     "id": link[videoLink["href"].index("=")+1:],
                     "views": extraData[1].getText(),
-                    "published": extraData[0].getText()
+                    "published": extraData[0].getText(),
+                    "duration": tile.select('.video-time')[0].getText(),
+                    "channel": tile.select('.yt-lockup-byline .spf-link')[0].getText()
                 }
                 results.append(video_info)
         return results

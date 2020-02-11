@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="youtube-unlimited-search",
-    version="0.1.1",
+    version="0.3",
     author="Hatem Karim",
     author_email="hatemkarimen@gmail.com",
     description="Allow you to search in youtube without care about requests limitation",
