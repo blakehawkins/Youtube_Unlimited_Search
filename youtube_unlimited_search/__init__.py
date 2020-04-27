@@ -9,6 +9,7 @@ class YoutubeUnlimitedSearch:
         self.search_terms = search_terms
         self.max_results = max_results
         self.videos = self.search()
+        self.parse_errors = []
 
     def search(self):
         encoded_search = urllib.parse.quote(self.search_terms)
@@ -42,19 +43,19 @@ class YoutubeUnlimitedSearch:
                     views = extraData[1].getText()
                     published = extraData[0].getText()
                 except:
-                    print("Can't catch views and published time")
+                    self.parse_errors.append("Can't catch views and published time")
                 try:
                     duration = tile.select('.video-time')[0].getText()
                 except:
-                    print("can't catch duration")
+                    self.parse_errors.append("can't catch duration")
                 try:
                     channel = tile.select('.yt-lockup-byline .spf-link')[0].getText()
                 except:
-                    print("can't catch channel")
+                    self.parse_errors.append("can't catch channel")
                 try:
                     description = tile.find('div', {'class': 'yt-lockup-description'}).getText()
                 except:
-                    print("can't catch channel")
+                    self.parse_errors.append("can't catch channel")
                 try:
                     video_info = {
                         "title": videoLink["title"],
@@ -69,8 +70,11 @@ class YoutubeUnlimitedSearch:
                     }
                     results.append(video_info)
                 except:
-                    print("skip this")
+                    self.parse_errors.append("skip this")
         return results
 
     def get(self):
         return self.videos
+    
+    def errors(self):
+        return self.parse_errors
